@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.tiny.cloud/1/cavbxfo0epks5f4va8ob3r814jc6xkrsxfai9svz6jkanets/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body>
+  <textarea id="document_content" name="document_content"></textarea>
+  <script>
+    // function getCookie(name) {
+    //   var cookieValue = null;
+    //   if (document.cookie && document.cookie !== '') {
+    //       var cookies = document.cookie.split(';');
+    //       for (var i = 0; i < cookies.length; i++) {
+    //           var cookie = jquery.trim(cookies[i]);
+    //           // Does this cookie string begin with the name we want?
+    //           if (cookie.substring(0, name.length + 1) === (name + '=')) {
+    //               cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+    //               break;
+    //           }
+    //       }
+    //   }
+    //   return cookieValue;
+    // }
+    tinymce.init({
+      selector: 'textarea',
+      plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss save',
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat save | save',
+      save_enablewhendirty: false,
+      save_onsavecallback: () => { // Saves current contents to existing Document Object
+        let content = tinymce.activeEditor.getContent();
+        fetch('/document_editor/save_document', {
+          credentials: 'include',
+          method: 'POST',
+          headers: {
+              //"X-CSRFToken": getCookie("csrftoken"),
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ "id": null, "content": content })
+        })
+        .then(response => response.json())
+        .then(response => console.log(JSON.stringify(response)))
+      },
+      tinycomments_mode: 'embedded',
+      tinycomments_author: 'Author name',
+      mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+      ],
+    });
+  </script>
+</body>
+</html>
